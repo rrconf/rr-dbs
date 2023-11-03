@@ -25,13 +25,17 @@ trapExit() {
 : DBS_CODENAME="${DBS_CODENAME:=$(detectCodename)}"
 : DBS_IMAGE="${DBS_IMAGE:=$DBS_BUILD_DIR/$DBS_CODENAME-$DBS_ARCH.tgz}"
 : DBS_IMAGE="$(realpath "$DBS_IMAGE")"
+: DBS_INCLUDE="${DBS_INCLUDE:=pkg.include}"
+: DBS_INCLUDE="$(realpath -e "$DBS_INCLUDE")"
+: DBS_EXCLUDE="${DBS_EXCLUDE:=pkg.exclude}"
+: DBS_EXCLUDE="$(realpath -e "$DBS_EXCLUDE")"
 
 target="$(mktemp -d "$DBS_BUILD_DIR/dbs.XXXX")"
 trap trapExit EXIT
 
-include="$(sort -u pkg.include)"
+include="$(sort -u "$DBS_INCLUDE")"
 include="${include//$'\n'/,}"
-exclude="$(sort -u pkg.exclude)"
+exclude="$(sort -u "$DBS_EXCLUDE")"
 exclude="${exclude//$'\n'/,}"
 
 # note: http_proxy and https_proxy are honored by debootstrap
