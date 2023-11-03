@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -Eueo pipefail
+# shellcheck disable=SC1090
+source "${RRCONFINC}"
+
+detectCodename() {
+  # shellcheck disable=SC1091
+  source /etc/os-release &>/dev/null || true
+  echo "${VERSION_CODENAME:-bookworm}"
+}
+
+# shellcheck disable=SC2317
+trapExit() {
+  test -d "$target" &&
+    rm -rf "$target"
+}
+
+: DBS_BUILD_DIR="${DBS_BUILD_DIR:=$HOME}"
+: DBS_BUILD_DIR="$(realpath -e "$DBS_BUILD_DIR")"
+: DBS_ARCH="${DHS_ARCH:=$(dpkg --print-architecture)}"
+: DBS_CODENAME="${DBS_CODENAME:=$(detectCodename)}"
+: DBS_IMAGE="${DBS_IMAGE:=$DBS_BUILD_DIR/$DBS_CODENAME-$DBS_ARCH.tgz}"
+: DBS_IMAGE="$(realpath "$DBS_IMAGE")"
+
+target="$(mktemp -d "$DBS_BUILD_DIR/dbs.XXXX")"
+trap trapExit EXIT
+
+include="$(sort -u pkg.include)"
+include="${include//$'\n'/,}"
+exclude="$(sort -u pkg.exclude)"
+exclude="${exclude//$'\n'/,}"
+
+# note: http_proxy and https_proxy are honored by debootstrap
+debootstrap --arch="$DBS_ARCH" --variant=minbase --merged-usr --verbose \
+  --include="$include" --exclude="$exclude" "$DBS_CODENAME" "$target"
+
+echo root:root | chpasswd --root "$target"
+printf 'pts/0\npts/1\n' >> "$target/etc/securetty"
+chroot "$target" systemctl enable systemd-networkd
+
+(cd "$target" && tar cf - . ) | gzip -9 > "$DBS_IMAGE"
+exit 0
