@@ -17,7 +17,7 @@ trapExit() {
 
 : DBS_BUILD_DIR="${DBS_BUILD_DIR:=$HOME}"
 : DBS_BUILD_DIR="$(realpath -e "$DBS_BUILD_DIR")"
-: DBS_ARCH="${DHS_ARCH:=$(dpkg --print-architecture)}"
+: DBS_ARCH="${DBS_ARCH:=$(dpkg --print-architecture)}"
 : DBS_CODENAME="${DBS_CODENAME:=$(detectCodename)}"
 : DBS_IMAGE="${DBS_IMAGE:=$DBS_BUILD_DIR/$DBS_CODENAME-$DBS_ARCH.tgz}"
 : DBS_IMAGE="$(realpath "$DBS_IMAGE")"
