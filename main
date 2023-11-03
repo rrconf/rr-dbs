@@ -3,6 +3,10 @@ set -Eueo pipefail
 # shellcheck disable=SC1090
 source "${RRCONFINC}"
 
+if (( RRUID != 0 )); then
+  fail debootstrap can only run as root
+fi
+
 detectCodename() {
   # shellcheck disable=SC1091
   source /etc/os-release &>/dev/null || true
