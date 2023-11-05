@@ -1,6 +1,6 @@
 # dbs
 
-Run debootstrap variant `minbase`` and produce root-fs tgz image of the resulting tree.
+Run debootstrap variant `minbase` and produce root-fs tgz image of the resulting tree.
 
 ## synopsis
 
