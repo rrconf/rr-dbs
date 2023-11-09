@@ -45,6 +45,9 @@ include="${include//$'\n'/,}"
 exclude="$(sort -u "$DBS_EXCLUDE")"
 exclude="${exclude//$'\n'/,}"
 
+# remove potentialy obsolete log
+rm -f "${DBS_IMAGE%%.tgz}-debootstrap.log"
+
 # note: http_proxy and https_proxy are honored by debootstrap
 debootstrap --arch="$DBS_ARCH" --variant=minbase --merged-usr --verbose \
   --include="$include" --exclude="$exclude" "$DBS_CODENAME" "$target"
