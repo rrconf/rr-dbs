@@ -58,5 +58,5 @@ echo root:root | chpasswd --root "$target"
 printf 'pts/0\npts/1\n' >> "$target/etc/securetty"
 chroot "$target" systemctl enable systemd-networkd
 
-(cd "$target" && tar cf - . ) | gzip -9 > "$DBS_IMAGE"
+(cd "$target" && tar --numeric-owner cf - . ) | gzip -9 > "$DBS_IMAGE"
 exit 0
