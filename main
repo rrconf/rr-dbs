@@ -23,6 +23,7 @@ trapExit() {
 saveDebootstrapLog() {
   test -f "$target/debootstrap/debootstrap.log" &&
     cp -f "$target/debootstrap/debootstrap.log" "${DBS_IMAGE%%.tgz}-debootstrap.log"
+  return 0
 }
 
 : DBS_BUILD_DIR="${DBS_BUILD_DIR:=$HOME}"
