@@ -15,8 +15,14 @@ detectCodename() {
 
 # shellcheck disable=SC2317
 trapExit() {
+  saveDebootstrapLog
   test -d "$target" &&
     rm -rf "$target"
+}
+
+saveDebootstrapLog() {
+  test -f "$target/debootstrap/debootstrap.log" &&
+    cp -f "$target/debootstrap/debootstrap.log" "${DBS_IMAGE%%.tgz}-debootstrap.log"
 }
 
 : DBS_BUILD_DIR="${DBS_BUILD_DIR:=$HOME}"
@@ -41,6 +47,8 @@ exclude="${exclude//$'\n'/,}"
 # note: http_proxy and https_proxy are honored by debootstrap
 debootstrap --arch="$DBS_ARCH" --variant=minbase --merged-usr --verbose \
   --include="$include" --exclude="$exclude" "$DBS_CODENAME" "$target"
+
+saveDebootstrapLog
 
 echo root:root | chpasswd --root "$target"
 printf 'pts/0\npts/1\n' >> "$target/etc/securetty"
