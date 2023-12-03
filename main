@@ -59,6 +59,7 @@ printf 'pts/0\npts/1\n' >> "$target/etc/securetty"
 printf 'LANG=en_US.UTF-8\n' >> "$target/etc/default/locale"
 printf 'en_US.UTF-8 UTF-8\n' >> "$target/etc/locale.gen"
 
+chroot "$target" dpkg-reconfigure locales
 chroot "$target" systemctl enable systemd-networkd
 
 (cd "$target" && tar --numeric-owner -cf - . ) | gzip -9 > "$DBS_IMAGE"
