@@ -39,6 +39,8 @@ saveDebootstrapLog() {
 : DBS_FINALIZER="${DBS_FINALIZER:=dbs.finalizer}"
 : DBS_FINALIZER="$(realpath -e "$DBS_FINALIZER")"
 
+echo "$DBS_FINALIZER"
+
 target="$(mktemp -d "$DBS_BUILD_DIR/dbs.XXXX")"
 trap trapExit EXIT
 
@@ -55,6 +57,8 @@ debootstrap --arch="$DBS_ARCH" --variant=minbase --merged-usr --verbose \
   --include="$include" --exclude="$exclude" "$DBS_CODENAME" "$target"
 
 saveDebootstrapLog
+
+echo "$DBS_FINALIZER"
 
 test -x "$DBS_FINALIZER" &&
   "$DBS_FINALIZER" "$target"
