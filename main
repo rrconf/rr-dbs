@@ -37,7 +37,8 @@ saveDebootstrapLog() {
 : DBS_EXCLUDE="${DBS_EXCLUDE:=pkg.exclude}"
 : DBS_EXCLUDE="$(realpath -e "$DBS_EXCLUDE")"
 : DBS_FINALIZER="${DBS_FINALIZER:=dbs.finalizer}"
-: DBS_FINALIZER="$(realpath -e "$DBS_FINALIZER")"
+
+DBS_FINALIZER="$(realpath -e "$DBS_FINALIZER")"
 
 echo "$DBS_FINALIZER"
 
