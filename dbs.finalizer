@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -Eueo pipefail
+
+target="$(realpath -e "$1")" || {
+    echo need target directory as the first argument
+}
+cd "$target"
+
+echo root:root | chpasswd --root "$target"
+printf 'pts/0\npts/1\n' >> "$target/etc/securetty"
+printf 'LANG=en_US.UTF-8\n' >> "$target/etc/default/locale"
+printf 'en_US.UTF-8 UTF-8\n' >> "$target/etc/locale.gen"
+
+export DEBIAN_FRONTEND=noninteractive
+chroot "$target" dpkg-reconfigure locales
+chroot "$target" systemctl enable systemd-networkd

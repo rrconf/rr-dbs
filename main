@@ -36,6 +36,8 @@ saveDebootstrapLog() {
 : DBS_INCLUDE="$(realpath -e "$DBS_INCLUDE")"
 : DBS_EXCLUDE="${DBS_EXCLUDE:=pkg.exclude}"
 : DBS_EXCLUDE="$(realpath -e "$DBS_EXCLUDE")"
+: DBS_FINALIZER="${DBS_FINALIZER:=dbs.finalizer}"
+: DBS_FINALIZER="$(realpath -e "$DBS_FINALIZER")"
 
 target="$(mktemp -d "$DBS_BUILD_DIR/dbs.XXXX")"
 trap trapExit EXIT
@@ -54,14 +56,8 @@ debootstrap --arch="$DBS_ARCH" --variant=minbase --merged-usr --verbose \
 
 saveDebootstrapLog
 
-echo root:root | chpasswd --root "$target"
-printf 'pts/0\npts/1\n' >> "$target/etc/securetty"
-printf 'LANG=en_US.UTF-8\n' >> "$target/etc/default/locale"
-printf 'en_US.UTF-8 UTF-8\n' >> "$target/etc/locale.gen"
+test -x "$DBS_FINALIZER" &&
+  "$DBS_FINALIZER" "$target"
 
-export DEBIAN_FRONTEND=noninteractive
-chroot "$target" dpkg-reconfigure locales
-chroot "$target" systemctl enable systemd-networkd
-
-(cd "$target" && tar --numeric-owner -cf - . ) | gzip -9 > "$DBS_IMAGE"
+(cd "$target" && tar --numeric-owner -cf - . ) | pigz -9 > "$DBS_IMAGE"
 exit 0
