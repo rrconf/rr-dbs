@@ -27,20 +27,17 @@ saveDebootstrapLog() {
 }
 
 : DBS_BUILD_DIR="${DBS_BUILD_DIR:=$HOME}"
-: DBS_BUILD_DIR="$(realpath -e "$DBS_BUILD_DIR")"
+DBS_BUILD_DIR="$(realpath -e "$DBS_BUILD_DIR")"
 : DBS_ARCH="${DBS_ARCH:=$(dpkg --print-architecture)}"
 : DBS_CODENAME="${DBS_CODENAME:=$(detectCodename)}"
 : DBS_IMAGE="${DBS_IMAGE:=$DBS_BUILD_DIR/$DBS_CODENAME-$DBS_ARCH.tgz}"
-: DBS_IMAGE="$(realpath "$DBS_IMAGE")"
+DBS_IMAGE="$(realpath "$DBS_IMAGE")"
 : DBS_INCLUDE="${DBS_INCLUDE:=pkg.include}"
-: DBS_INCLUDE="$(realpath -e "$DBS_INCLUDE")"
+DBS_INCLUDE="$(realpath -e "$DBS_INCLUDE")"
 : DBS_EXCLUDE="${DBS_EXCLUDE:=pkg.exclude}"
-: DBS_EXCLUDE="$(realpath -e "$DBS_EXCLUDE")"
+DBS_EXCLUDE="$(realpath -e "$DBS_EXCLUDE")"
 : DBS_FINALIZER="${DBS_FINALIZER:=dbs.finalizer}"
-
 DBS_FINALIZER="$(realpath -e "$DBS_FINALIZER")"
-
-echo "$DBS_FINALIZER"
 
 target="$(mktemp -d "$DBS_BUILD_DIR/dbs.XXXX")"
 trap trapExit EXIT
@@ -58,8 +55,6 @@ debootstrap --arch="$DBS_ARCH" --variant=minbase --merged-usr --verbose \
   --include="$include" --exclude="$exclude" "$DBS_CODENAME" "$target"
 
 saveDebootstrapLog
-
-echo "$DBS_FINALIZER"
 
 test -x "$DBS_FINALIZER" &&
   "$DBS_FINALIZER" "$target"
